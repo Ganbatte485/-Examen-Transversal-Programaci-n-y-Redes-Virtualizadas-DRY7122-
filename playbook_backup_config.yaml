@@ -1,0 +1,17 @@
+---
+- name: Respaldo de la configuración del router
+  hosts: csr
+  gather_facts: no
+  connection: network_cli
+
+  tasks:
+    - name: Ejecutar show running-config
+      ios_command:
+        commands:
+          - show running-config
+      register: backup_output
+
+    - name: Guardar respaldo en archivo local
+      copy:
+        content: "{{ backup_output.stdout[0] }}"
+        dest: "./respaldo_running_config.txt"

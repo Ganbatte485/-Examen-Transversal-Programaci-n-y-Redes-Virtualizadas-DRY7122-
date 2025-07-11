@@ -1,0 +1,27 @@
+---
+- name: Instalar y configurar Apache en puerto 9999
+  hosts: local
+  become: true
+  tasks:
+    - name: Instalar Apache
+      apt:
+        name: apache2
+        state: present
+        update_cache: true
+
+    - name: Cambiar puerto Apache a 9999
+      lineinfile:
+        path: /etc/apache2/ports.conf
+        regexp: '^Listen '
+        line: 'Listen 9999'
+
+    - name: Cambiar puerto en default site
+      lineinfile:
+        path: /etc/apache2/sites-available/000-default.conf
+        regexp: '^<VirtualHost \*:'
+        line: '<VirtualHost *:9999>'
+
+    - name: Reiniciar Apache
+      service:
+        name: apache2
+        state: restarted
